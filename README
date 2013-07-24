@@ -1,4 +1,10 @@
-﻿To run the "shiny" application:
+﻿ActivityMap
+Authors:
+    The first iteration of these visualizations was created by Hal Beresford.
+    Steve Chall added some additional functionality.
+    Ang Li is currently doing the lion's share of development work.
+
+To run the "shiny" application:
 
 -Download and install R software
 
