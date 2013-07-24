@@ -8,7 +8,7 @@ subjectNames <- read.csv("name_of_subjects.csv", header = FALSE, sep = ",")
 nameList <- as.character(subjectNames$V1)
 
 ## this will be updated each time the script is updated
-version = "(Development Version 6)"
+version = "(Development Version 7 by Ang)"
 
 # Define UI type
 shinyUI(pageWithSidebar(

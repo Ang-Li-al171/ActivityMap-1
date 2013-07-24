@@ -2,7 +2,7 @@
 private = FALSE
 
 ## this will be updated each time the script is updated
-version = "(Development Version 6)"
+version = "(Development Version 7 by Ang)"
 
 ################################################################################
 ## Define necessary global variables
