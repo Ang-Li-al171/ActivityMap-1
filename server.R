@@ -1,9 +1,6 @@
 ## change this to TRUE to switch no name version, change ui.R and server.R
 private = FALSE
 
-## this will be updated each time the script is updated
-version = "(Version 8, July 25)"
-
 ################################################################################
 ## Define necessary global variables
 ################################################################################
