@@ -2,7 +2,7 @@
 private = FALSE
 
 ## this will be updated each time the script is updated
-version = "(Development Version 7 by Ang)"
+version = "(Version 8, July 25)"
 
 ################################################################################
 ## Define necessary global variables
@@ -282,9 +282,9 @@ decodeItem <- function(type, id){
   }
   for (i in 1:length(firstCol)){
     if (firstCol[i] == id){
-      str <- paste(substr(as.character(data[i, 2]), 1, 30),
+      str <- paste(substr(as.character(data[i, 2]), 1, 40),
                    "__",
-                   substr(as.character(data[i, 3]), 1, 50),
+                   substr(as.character(data[i, 3]), 1, 70),
                    sep = "")
     }
   }
@@ -640,6 +640,11 @@ drugData <- read.csv("tbPrescriptions.csv")
 pharData <- read.csv("tbPharmacy.csv")
 webData <- read.csv("tbWebsites.csv")
 
+userGuideInfo <- read.csv("userGuide.csv")
+userGuide <- userGuideInfo$x
+versionInfo <- read.csv("updateInfo.csv")
+versionGuide <- versionInfo$x
+
 
 participantClrs = pClrVector()      # Set up colors vector
 participantShapes = pPchVector()    # Set up shapes vector
@@ -936,6 +941,14 @@ shinyServer(function(input, output, session) {
            "bySubject" = "object",
            "byType" = "objectByType"
     )
+  })
+  
+  userRefChoiceInput <- reactive({
+    return(as.character(input$userRefChoice))
+  })
+  
+  versionChoiceInput <- reactive({
+    return(as.character(input$versionChoice))
   })
         
 ################################################################################
@@ -1512,16 +1525,38 @@ shinyServer(function(input, output, session) {
 ################################################################################
 ## View objects interacted with by subjects chosen
 ## View for Raw Data if necessary
+## Provide text for user guide or updates information
 ################################################################################
+  objDataToTable <- function(dataVec){
+    
+    freqCount <- table(dataVec)
+  	
+  	if (length(freqCount) > 0){
+      frameOut <- data.frame(
+        Object.Type.And.Info = names(freqCount)[1:length(freqCount)],
+        Frequency = freqCount[1:length(freqCount)]
+      )
+    
+      row.names(frameOut) <- seq(1, length(frameOut$Frequency))
+      return(frameOut)
+    }
+    else{
+      return(data.frame(Processing...Data... = "Please wait..."))
+    }
+  }
   
-  output$objData <- renderPrint({
-    itemData <- gatherItem()
-    table(itemData)
+  objDataOut <- reactive({
+  	objDataToTable(gatherItem())
+  })
+  output$objData <- renderTable({
+    objDataOut()
   })
   
-  output$objType <- renderPrint({
-    itemType <- gatherItemType()
-    table(itemType)
+  objTypeOut <- reactive({
+    objDataToTable(gatherItemType())
+  })
+  output$objType <- renderTable({
+    objTypeOut()
   })
   
   output$clinData <- renderPrint({
@@ -1537,5 +1572,37 @@ shinyServer(function(input, output, session) {
   output$convData <- renderPrint({
   	gatherConversation()
     cat(possibleSub)
+  })
+  
+  getUserGuideText <- function(choices){
+  	textOut <- ''
+    for (i in 1:length(choices)){
+      textOut <- paste(textOut, choices[i], ":\n", sep = "")
+      num <- switch(choices[i],
+             "Introduction" = 1,
+             "Position Heat Map" = 2,
+             "Object Heat Map" = 3,
+             "Conversation Map with Position Data" = 4,
+             "Raw Data" = 5)
+      textOut <- paste(textOut, userGuide[num], "\n\n", sep = "")
+    }
+    return(textOut)
+  }
+  output$userRef <- renderPrint({
+  	cat(getUserGuideText(userRefChoiceInput()))
+  })
+  
+  getVersionText <- function(choices){
+  	textOut <- ''
+    for (i in 1:length(choices)){
+      textOut <- paste(textOut, choices[i], ":\n", sep = "")
+      num <- switch(choices[i],
+                    "Update on version 8, 07/25" = 1)
+      textOut <- paste(textOut, versionGuide[num], "\n\n", sep = "")
+    }
+    return(textOut)
+  }
+  output$versionRef <- renderPrint({
+  	cat(getVersionText(versionChoiceInput()))
   })
 })

@@ -8,7 +8,7 @@ subjectNames <- read.csv("name_of_subjects.csv", header = FALSE, sep = ",")
 nameList <- as.character(subjectNames$V1)
 
 ## this will be updated each time the script is updated
-version = "(Development Version 7 by Ang)"
+version = "(Version 8, July 25)"
 
 # Define UI type
 shinyUI(pageWithSidebar(
@@ -42,6 +42,26 @@ shinyUI(pageWithSidebar(
     # submitButton("Update Plots"),  
     
     conditionalPanel(
+      condition = "$('li.active a').first().html() === 'User Guide' ",
+      selectInput("userRefChoice", "Choose functionality:", multiple = TRUE,
+                  c("Introduction",
+                    "Position Heat Map",
+                    "Object Heat Map",
+                    "Conversation Map with Position Data",
+                    "Raw Data"),
+                    selected = "Introduction"),
+      br()
+    ),
+    
+    conditionalPanel(
+      condition = "$('li.active a').first().html() === 'User Guide' ",
+      selectInput("versionChoice", "Choose updates:", multiple = TRUE,
+                  c("Update on version 8, 07/25"),
+                    selected = "Update on version 8, 07/25"),
+      br()
+    ),
+    
+    conditionalPanel(
       condition = "$('li.active a').first().html() === 'Object Interactions' ",
       radioButtons("objPlotType",
                    "Plot type:",
@@ -53,7 +73,8 @@ shinyUI(pageWithSidebar(
     ),
     
     conditionalPanel(
-      condition = "input.private == false",
+      condition = "input.private == false &&
+                   $('li.active a').first().html() !== 'User Guide' ",
       # check boxes for all 20 subjects, with avatar names
       checkboxGroupInput("subject", "Subjects:",  
                       c(nameList[1], 
@@ -82,7 +103,8 @@ shinyUI(pageWithSidebar(
     ),
     
     conditionalPanel(
-      condition = "input.private == true",
+      condition = "input.private == true &&
+                   $('li.active a').first().html() !== 'User Guide' ",
       # check boxes for all 20 subjects, with avatar names
       checkboxGroupInput("subjectNoName", "Subjects(Anonymous): ",  
                       c("S1", 
@@ -111,7 +133,7 @@ shinyUI(pageWithSidebar(
     ),
     
     conditionalPanel(
-      condition = TRUE,
+      condition = "$('li.active a').first().html() !== 'User Guide' ",
       checkboxInput("checkAllSub", "All Subjects", value = FALSE)
     ),
     
@@ -147,7 +169,8 @@ shinyUI(pageWithSidebar(
 
     conditionalPanel(
       condition = "$('li.active a').first().html() !== 'Raw Data' &&
-                   $('li.active a').first().html() !== 'Conversations'",
+                   $('li.active a').first().html() !== 'Conversations' &&
+                   $('li.active a').first().html() !== 'User Guide'",
       radioButtons("timePeriod",
                    "Time Period type:",
                    list("By DayCount" = "dayCount",
@@ -160,7 +183,8 @@ shinyUI(pageWithSidebar(
     conditionalPanel( # choose periods by DayCount
       condition = "input.timePeriod == 'dayCount' && (
                    $('li.active a').first().html() !== 'Raw Data' &&
-                   $('li.active a').first().html() !== 'Conversations' )",
+                   $('li.active a').first().html() !== 'Conversations' &&
+                   $('li.active a').first().html() !== 'User Guide' )",
       sliderInput("dayCountPeriod", "Time: DayCount Week #:",
                   min = 1, max = 26, value = c(1,1), step = 1
                  )
@@ -168,7 +192,8 @@ shinyUI(pageWithSidebar(
     
     conditionalPanel( # choose periods by Real Date
       condition = "(input.timePeriod == 'date' &&
-                   $('li.active a').first().html() !== 'Raw Data') ||
+                   $('li.active a').first().html() !== 'Raw Data' &&
+                   $('li.active a').first().html() !== 'User Guide') ||
                    ( $('li.active a').first().html() === 'Conversations' )",
       dateRangeInput("dateRange", "Date Range:",
                      start = "2011-01-01", end = "2011-01-01",
@@ -277,14 +302,14 @@ shinyUI(pageWithSidebar(
         conditionalPanel( 
           condition = "input.object == true",
           h4("Object Interaction Data (Frequency Count)"),
-          verbatimTextOutput("objData"),
+          tableOutput("objData"),
           br()
         ),
         
         conditionalPanel( 
           condition = "input.objectType == true",
           h4("Object Type (Frequency Count)"),
-          verbatimTextOutput("objType"),
+          tableOutput("objType"),
           br()
         ),
         
@@ -336,7 +361,16 @@ shinyUI(pageWithSidebar(
           h4("Raw Survey Data"),
           verbatimTextOutput("survData")
         )
-      )    
+      ),
+        
+      # one more tab, for user guide
+      tabPanel("User Guide",
+        h4("How to Use This Visualization"),
+        verbatimTextOutput("userRef"),
+        br(),
+        h4("Updates Information"),
+        verbatimTextOutput("versionRef")
+      )
     )
   )
 ))
