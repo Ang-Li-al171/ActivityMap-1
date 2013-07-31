@@ -8,7 +8,7 @@ subjectNames <- read.csv("name_of_subjects.csv", header = FALSE, sep = ",")
 nameList <- as.character(subjectNames$V1)
 
 ## this will be updated each time the script is updated
-version = "(Development Version 10)"
+version = "(Development Version 11)"
 
 # Define UI type
 shinyUI(pageWithSidebar(
@@ -56,8 +56,9 @@ shinyUI(pageWithSidebar(
     conditionalPanel(
       condition = "$('li.active a').first().html() === 'User Guide' ",
       selectInput("versionChoice", "Choose updates:", multiple = TRUE,
-                  c("Update on version 8, 07/25"),
-                    selected = "Update on version 8, 07/25"),
+                  c("Update on version 11, 07/31",
+                    "Update on version 8, 07/25"),
+                    selected = "Update on version 11, 07/31"),
       br()
     ),
     
@@ -152,18 +153,16 @@ shinyUI(pageWithSidebar(
     
     conditionalPanel(
       condition = "$('li.active a').first().html() === 'Object Interactions'",
-      # options to display information needed
       checkboxInput("object",
                     "Display Object Interactions Frequency Count",
-                    value=FALSE)
-    ),
-    
-    conditionalPanel(
-      condition = "$('li.active a').first().html() === 'Object Interactions'",
+                    value=FALSE),
       # options to display information needed
       checkboxInput("objectType",
                     "Display Object Type Statistics",
                     value=FALSE),
+      checkboxInput("objStatsPlot",
+                    "Display Object Interaction Type Stats Plot",
+                    value=TRUE),
       br()
     ),
 
@@ -220,6 +219,10 @@ shinyUI(pageWithSidebar(
       condition = "$('li.active a').first().html()==='Main Window'",
       
       br(),
+      
+      # optional weight plot
+      checkboxInput("posStatsPlot", "Show Position Stats Plot", value=TRUE), 
+      
       # optional weight plot
       checkboxInput("weightPlot", "Show Weight Plots", value=TRUE), 
       # optional HBA1C plot
@@ -271,7 +274,13 @@ shinyUI(pageWithSidebar(
        
         # set the width & height of Activity Map
         plotOutput("activityPlot", height = "850px", width = "850px"), 
-           
+        
+        conditionalPanel( # optional heatmap plot
+          condition = "input.posStatsPlot == true",
+          h4("Position Intensity Plot for All Locations"),
+          plotOutput("posStatsPlot", height = "600px", width = "850px")
+        ),
+        
         conditionalPanel( # optional weight plot
           condition = "input.weightPlot == true",
           plotOutput("weightPlot")
@@ -311,6 +320,12 @@ shinyUI(pageWithSidebar(
           h4("Object Type (Frequency Count)"),
           tableOutput("objType"),
           br()
+        ),
+        
+        conditionalPanel( # optional heatmap plot
+          condition = "input.objStatsPlot == true",
+          h4("Object Interaction Intensity Plot for All Types"),
+          plotOutput("objStatsPlot", height = "600px", width = "850px")
         ),
         
         plotOutput("legendForObject")

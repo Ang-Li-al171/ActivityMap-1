@@ -2,3 +2,6 @@
 "1","-Added in User Guide tab for the app for better User experience.
 -Used tables for displaying individual object interaction data in a neater manner.
 -now using GitHub for source code sharing."
+"2","-Added in frequency heat map for Position Stats and object Stats
+-Available in Main Window and Object Interaction Tab
+-Light color means smaller values for frequencies, negative/smaller values for changes"

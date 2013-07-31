@@ -1292,6 +1292,31 @@ shinyServer(function(input, output, session) {
   })
 
 ################################################################################
+## Heatmap for position/obj stats for all subjects
+################################################################################
+  output$posStatsPlot <- renderPlot({
+    posStats <- read.csv("position_Stats.csv", header = TRUE, sep = ",")
+    row.names(posStats) <- paste('S', row.names(posStats), sep = "")
+    matrix <- data.matrix(posStats)
+    library(RColorBrewer)
+    pos_heatmap <- heatmap(matrix[1:20, 2:14], Rowv = NA, Colv = NA,
+                           col = brewer.pal(9, "Blues"), 
+                           scale = "column", 
+                           margin = c(10 , 10))
+  })
+
+  output$objStatsPlot <- renderPlot({
+    itemStats <- read.csv("item_Stats.csv", header = TRUE, sep = ",")
+    row.names(itemStats) <- paste('S', row.names(itemStats), sep = "")
+    matrix <- data.matrix(itemStats)
+    library(RColorBrewer)
+    pos_heatmap <- heatmap(matrix[1:20, 2:13], Rowv = NA, Colv = NA,
+                           col = brewer.pal(9, "Reds"), 
+                           scale = "column", 
+                           margin = c(10 , 10))
+  })
+  
+################################################################################
 ## Define the set of y limits to use for various plots below
 ################################################################################
   
@@ -1594,7 +1619,8 @@ shinyServer(function(input, output, session) {
     for (i in 1:length(choices)){
       textOut <- paste(textOut, choices[i], ":\n", sep = "")
       num <- switch(choices[i],
-                    "Update on version 8, 07/25" = 1)
+                    "Update on version 8, 07/25" = 1,
+                    "Update on version 11, 07/31" = 2)
       textOut <- paste(textOut, versionGuide[num], "\n\n", sep = "")
     }
     return(textOut)
