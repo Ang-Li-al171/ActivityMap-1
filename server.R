@@ -679,7 +679,8 @@ addBuildings <- function(datacoord, shadesBoolean) {
     for (m in 1:10) {
       buildingNameExtra <- names(freqBuildings)[m]
       buildingName <- substr(buildingNameExtra, 5, 
-                             nchar(str, type = "chars", allowNA = FALSE))
+                             nchar(buildingNameExtra, type = "chars", 
+                                   allowNA = FALSE))
       buildingID <- buildingToCoorID(buildingName)
       datacoordsub <- subset(datacoord, ID == buildingID)
       polygon(x = datacoordsub$X, y = datacoordsub$Y,
