@@ -3,12 +3,11 @@ library(shiny)
 ## change this to TRUE to switch to no name version, change ui.R and server.R
 private = FALSE
 
-
 subjectNames <- read.csv("name_of_subjects.csv", header = FALSE, sep = ",")
 nameList <- as.character(subjectNames$V1)
 
 ## this will be updated each time the script is updated
-version = "(Development Version 11)"
+version = "(Development Version 12)"
 
 # Define UI type
 shinyUI(pageWithSidebar(
@@ -56,9 +55,10 @@ shinyUI(pageWithSidebar(
     conditionalPanel(
       condition = "$('li.active a').first().html() === 'User Guide' ",
       selectInput("versionChoice", "Choose updates:", multiple = TRUE,
-                  c("Update on version 11, 07/31",
+                  c("Update on version 12, 07/31",
+                    "Update on version 11, 07/31",
                     "Update on version 8, 07/25"),
-                    selected = "Update on version 11, 07/31"),
+                    selected = "Update on version 12, 07/31"),
       br()
     ),
     
@@ -67,7 +67,19 @@ shinyUI(pageWithSidebar(
       radioButtons("objPlotType",
                    "Plot type:",
                    list("By Subjects" = "bySubject",
-                        "By Object Type" = "byType"
+                        "By Object Type" = "byType",
+                        "By Aggregate Frequency" = "byFreq"
+                   ),
+                   selected = "By Subjects"
+      )
+    ),
+    
+    conditionalPanel(
+      condition = "$('li.active a').first().html() === 'Main Window' ",
+      radioButtons("posPlotType",
+                   "Plot type:",
+                   list("By Subjects" = "bySubject",
+                        "By Aggregate Frequency" = "byFreq"
                    ),
                    selected = "By Subjects"
       )
@@ -278,8 +290,8 @@ shinyUI(pageWithSidebar(
         conditionalPanel( # optional heatmap plot
           condition = "input.posStatsPlot == true",
           h4("Position Intensity Plot for All Locations"),
-          helpText("(Lighter color means smaller freqeuncy,
-           more negative changes)"),
+          helpText("(Lighter color means smaller freqeuncy for position data,
+           larger decrease or smaller increase for changes)"),
           plotOutput("posStatsPlot", height = "600px", width = "850px")
         ),
         
@@ -298,7 +310,7 @@ shinyUI(pageWithSidebar(
           condition = "input.surveyP == true",
           plotOutput("surveyPlot")
         ),
-          
+        
         plotOutput("legendForMain")
       ),
       
@@ -327,13 +339,12 @@ shinyUI(pageWithSidebar(
         conditionalPanel( # optional heatmap plot
           condition = "input.objStatsPlot == true",
           h4("Object Interaction Intensity Plot for All Types"),
-          helpText("(Lighter color means smaller freqeuncy,
-           more negative changes)"),
+          helpText("(Lighter color means smaller freqeuncy for object data,
+           larger decrease or smaller increase for changes)"),
           plotOutput("objStatsPlot", height = "600px", width = "850px")
         ),
         
         plotOutput("legendForObject")
-        
       ),
       
       # third tab, handling conversations

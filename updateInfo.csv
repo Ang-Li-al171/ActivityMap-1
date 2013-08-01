@@ -5,3 +5,8 @@
 "2","-Added in frequency heat map for Position Stats and object Stats
 -Available in Main Window and Object Interaction Tab
 -Light color means smaller values for frequencies, negative/smaller values for changes"
+"3","-Added in another plot type for Position and Object Interaction plots -- plot by aggregate frequency
+-The buildings will be shaded based on frequency of visits in position map
+-They will be shaded based on frequency of object interactions in those buildings
+-The numbers beside building names are the frequency counts
+-Try not to use this type for All Subjects over extended period of time, because it takes time to process"

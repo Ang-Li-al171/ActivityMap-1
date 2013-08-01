@@ -8,6 +8,21 @@ private = FALSE
 # global vector for storing a list of conversations in a time period
 conversationChoice <- c("None")
 
+# global vector for storing a list of frequencies for all buildings
+freqBuildings <- data.frame()
+freqBuildingInit <- function(){
+  freqBuildings <<- data.frame(Pos.Games = c(0),
+                              Pos.Orientation = c(0),
+                              Pos.Gym = c(0),
+                              Pos.Classroom = c(0),
+                              Pos.Restaurant = c(0),
+                              Pos.Clothier = c(0),
+                              Pos.Pharmacy = c(0),
+                              Pos.Grocery = c(0),
+                              Pos.Bookstore = c(0),
+                              Pos.Outdoor = c(0))
+}
+
 # global vector for storing a list of 20 logKeys
 logKeys <- read.csv("log_key_list.csv", header = FALSE, sep = ",")
 logKeyTable <- as.character(logKeys$V1)
@@ -81,6 +96,68 @@ objTypeForLegend <- function(){
           'Object'
           )
   )
+}
+
+distance <- function(x1, y1, x2, y2){
+  a <- sqrt((as.numeric(x1)-as.numeric(x2))*(as.numeric(x1)-as.numeric(x2)) + (as.numeric(y1)-as.numeric(y2))*(as.numeric(y1)-as.numeric(y2)))
+  return(as.numeric(a))
+}
+
+identifyLocation <- function(posX, posY){
+  if ((distance(posX, posY, 37, 220)) < 25){
+  	return(1) 
+  	# "Games"
+  }
+  else if ((distance(posX, posY, 60, 190)) < 25){
+  	return(2) 
+  	# "Orientation"
+  }
+  else if ((distance(posX, posY, 45, 50)) < 40){
+  	return(3) 
+  	# "Gym"
+  }
+  else if ((distance(posX, posY, 125, 125)) < 30){
+  	return(4) 
+  	# "Classroom"
+  }
+  else if ((distance(posX, posY, 215, 50)) < 30){
+  	return(5) 
+  	# "Restaurant"
+  }
+  else if ((distance(posX, posY, 225, 140)) < 15){
+  	return(6) 
+  	# "Clothier"
+  }
+  else if ((distance(posX, posY, 225, 170)) < 15){
+  	return(7) 
+  	# "Pharmacy"
+  }
+  else if ((distance(posX, posY, 220, 205)) < 30){
+  	return(8) 
+  	# "Grocery"
+  }
+  else if ((distance(posX, posY, 180, 215)) < 20){
+  	return(9) 
+  	# "Bookstore"
+  }
+  else{
+  	return(10) 
+  	# "Outdoor"
+  }
+}
+
+buildingToCoorID <- function(building){
+  switch(building,
+         "Clothier" = 1,
+         "Pharmacy" = 2,
+         "Grocery" = 3,
+         "Bookstore" = 4,
+         "Restaurant" = 5,
+         "Classroom" = 6,
+         "Gym" = 7,
+         "Games" = 8,
+         "Orientation" = 9,
+         "Outdoor" = 10)
 }
 
 ## identify subjects for name version
@@ -344,7 +421,8 @@ plotTimePeriod <- function(dayCountPeriod, datePeriod, timePeriod,
     }
   }
   
-  if (plotType == "object" | plotType == "objectByType"){
+  if (plotType == "object" | plotType == "objectByType" |
+      plotType == "objShadesBuilding"){
     datasubset <- subset(datasubset, (as.character(logItem) != ""))
   }
   
@@ -375,6 +453,28 @@ plotTimePeriod <- function(dayCountPeriod, datePeriod, timePeriod,
       }
     }
     
+    else if (plotType == "shadesBuilding" | plotType == "objShadesBuilding"){
+      freqCount <- data.frame(Pos.Games = c(0),
+                          Pos.Orientation = c(0),
+                          Pos.Gym = c(0),
+                          Pos.Classroom = c(0),
+                          Pos.Restaurant = c(0),
+                          Pos.Clothier = c(0),
+                          Pos.Pharmacy = c(0),
+                          Pos.Grocery = c(0),
+                          Pos.Bookstore = c(0),
+                          Pos.Outdoor = c(0))
+      for (i in 1:length(datasubset$logPosX)){
+        if (!is.na(datasubset$logPosX[i]) & !is.na(datasubset$logPosY[i])){
+          loc <- identifyLocation(as.numeric(datasubset$logPosX[i]), 
+                                  as.numeric(datasubset$logPosY[i]))
+          freqCount[loc] <- freqCount[loc] + 1
+        }
+      }
+      freqCount <- freqCount[order(freqCount, decreasing = TRUE)]
+      freqBuildings <<- freqCount
+    }
+    
     ## otherwise, normal plot by subjects
   	else{
       for(j in 1:length(datasubset$logKey)){        
@@ -385,19 +485,37 @@ plotTimePeriod <- function(dayCountPeriod, datePeriod, timePeriod,
       }
     }
   }
+  else{
+    freqBuildingInit()
+  }
   
-  ## actual plot function
-  plot(datasubset$logPosX,
-       datasubset$logPosY,
-       ylim = c(0,256),
-       xlim = c(0,256),
-       cex = 1.5,
-       xlab = "X",
-       ylab = "Y",
-       pch=pchVals,
-       col=clrs,
-       main = plotTitle
-  )
+  if (plotType != "shadesBuilding" & plotType != "objShadesBuilding"){
+    ## actual plot function
+    plot(datasubset$logPosX,
+         datasubset$logPosY,
+         ylim = c(0,256),
+         xlim = c(0,256),
+         cex = 1.5,
+         xlab = "X",
+         ylab = "Y",
+         pch=pchVals,
+         col=clrs,
+         main = plotTitle
+    )
+  }
+  else{
+    plot(0,
+         0,
+         ylim = c(0,256),
+         xlim = c(0,256),
+         cex = 1.5,
+         xlab = "X",
+         ylab = "Y",
+         pch = 1,
+         col = "white",
+         main = plotTitle
+    )
+  }
   
   ## if conversation plot, add in the icons @ location for conversations
   if (plotType == "conversation"){
@@ -478,25 +596,33 @@ plotTimePeriod <- function(dayCountPeriod, datePeriod, timePeriod,
 # Add building outlines and labels. Reference for outlines: 
 # http://stat.ethz.ch/R-manual/R-patched/library/graphics/html/polygon.html)
 ################################################################################
-addBuildings <- function(datacoord) {
-  for (m in 1:10) {
-    datacoordsub <- subset(datacoord, ID == m)
-    polygon(x = datacoordsub$X, y = datacoordsub$Y,
-            density = 0,
-            col = c("red", "blue"),
-            border = c("black", "yellow"),
-            lwd = 1, lty = c("solid", "solid"))
-  }
-  
-  text(82, 130, cex = 1.2, 'Classroom')
-  text(37, 241, cex = 1.2, 'Games')
-  text(89, 185, cex = 1.2, 'Orientation')
-  text(185, 230, cex = 1.2, 'Bookstore')
-  text(220, 230, cex = 1.2, 'Grocery')
-  text(251, 173, cex = 1.2, 'Pharmacy')
-  text(247, 143, cex = 1.2, 'Clothier')
-  text(229, 28, cex = 1.2, 'Restaurant')
-  text(30, 29, cex = 1.2, 'Gym')
+
+xCoorText <- function(str){
+  switch(str,
+         'Classroom' = 82,
+         'Games' = 37,
+         'Orientation' = 89,
+         'Bookstore' = 185,
+         'Grocery' = 220,
+         'Pharmacy' = 226,
+         'Clothier' = 226,
+         'Restaurant' = 229,
+         'Gym' = 30,
+         'Outdoor' = 180)
+}
+
+yCoorText <- function(str){
+  switch(str,
+         'Classroom' = 130,
+         'Games' = 244,
+         'Orientation' = 185,
+         'Bookstore' = 230,
+         'Grocery' = 230,
+         'Pharmacy' = 187,
+         'Clothier' = 120,
+         'Restaurant' = 25,
+         'Gym' = 25,
+         'Outdoor' = 150)
 }
 
 ## take "community" as "classroom"
@@ -520,6 +646,53 @@ yCoor <- function(str){
          "Pharmacy" = 178,
          "Restaurant" = 28,
          "Welcome" = 185)
+}
+
+addBuildings <- function(datacoord, shadesBoolean) {
+  if (shadesBoolean == 0){
+    for (m in 1:10) {
+      datacoordsub <- subset(datacoord, ID == m)
+      polygon(x = datacoordsub$X, y = datacoordsub$Y,
+              density = 0,
+              col = "blue",
+              border = c("black", "yellow"),
+              lwd = 1, lty = c("solid", "solid"))
+    }
+        
+    text(82, 130, cex = 1.2, 'Classroom')
+    text(37, 241, cex = 1.2, 'Games')
+    text(89, 185, cex = 1.2, 'Orientation')
+    text(185, 230, cex = 1.2, 'Bookstore')
+    text(220, 230, cex = 1.2, 'Grocery')
+    text(251, 173, cex = 1.2, 'Pharmacy')
+    text(247, 143, cex = 1.2, 'Clothier')
+    text(229, 28, cex = 1.2, 'Restaurant')
+    text(30, 29, cex = 1.2, 'Gym')
+  }
+  else{
+  	if (shadesBoolean == 1){
+      colorPlates <- brewer.pal(9, "Blues")
+    }else{
+      colorPlates <- brewer.pal(9, "Reds")
+    }
+    colorIndex <- 9
+    for (m in 1:10) {
+      buildingNameExtra <- names(freqBuildings)[m]
+      buildingName <- substr(buildingNameExtra, 5, 
+                             nchar(str, type = "chars", allowNA = FALSE))
+      buildingID <- buildingToCoorID(buildingName)
+      datacoordsub <- subset(datacoord, ID == buildingID)
+      polygon(x = datacoordsub$X, y = datacoordsub$Y,
+              col = colorPlates[colorIndex],
+              border = c("black", "yellow"),
+              lwd = 1, lty = c("solid", "solid"))
+      if (buildingID != 10){
+        colorIndex <- colorIndex - 1
+      }
+      text(xCoorText(buildingName), yCoorText(buildingName), cex = 1.2, 
+           paste(buildingName, freqBuildings[m]))
+    }
+  }
 }
 
 ################################################################################
@@ -608,6 +781,7 @@ library(shiny)        #load shiny library for interactive map
 library(MASS)
 library(chron)        #load chron library for handling time objects
 library(pixmap)       #load pixmap library for handling headphone logo
+library(RColorBrewer) #load colorBrewer library for diff shades of colors
 
 # setwd('~/desktop/research/shiny_CheckBoxMap/')       # Set working directory
 # pdf("ActivityMap-weekly.52.pdf")                     # Open output file
@@ -936,7 +1110,15 @@ shinyServer(function(input, output, session) {
   objectPlotTypeInput <- reactive({
     switch(input$objPlotType,
            "bySubject" = "object",
-           "byType" = "objectByType"
+           "byType" = "objectByType",
+           "byFreq" = "objShadesBuilding"
+    )
+  })
+  
+  posPlotTypeInput <- reactive({
+    switch(input$posPlotType,
+           "bySubject" = "position",
+           "byFreq" = "shadesBuilding"
     )
   })
   
@@ -1164,7 +1346,7 @@ shinyServer(function(input, output, session) {
    
     subjectID <- subjectInput() #interactive subject input from user
     if (type == "activityPlot"){
-      plotType <- "position"
+      plotType <- posPlotTypeInput()
     }
     else if (type == "objectPlot"){
       plotType <- objectPlotTypeInput()
@@ -1261,7 +1443,15 @@ shinyServer(function(input, output, session) {
     }
     
     ## add the buildings
-    addBuildings(datacoord)
+    if (plotType == "shadesBuilding"){
+      addBuildings(datacoord, 1)
+    }
+    else if (plotType == "objShadesBuilding"){
+      addBuildings(datacoord, 2)
+    }
+    else{
+      addBuildings(datacoord, 0)
+    }
           
     ## unused by Ang 06/29
     datasubsetLengths = c(datasubsetLengths, currDataSubsetLength )
@@ -1298,7 +1488,6 @@ shinyServer(function(input, output, session) {
     posStats <- read.csv("position_Stats.csv", header = TRUE, sep = ",")
     row.names(posStats) <- paste('S', row.names(posStats), sep = "")
     matrix <- data.matrix(posStats)
-    library(RColorBrewer)
     pos_heatmap <- heatmap(matrix[1:20, 2:14], Rowv = NA, Colv = NA,
                            col = brewer.pal(9, "Blues"), 
                            scale = "column", 
@@ -1309,7 +1498,6 @@ shinyServer(function(input, output, session) {
     itemStats <- read.csv("item_Stats.csv", header = TRUE, sep = ",")
     row.names(itemStats) <- paste('S', row.names(itemStats), sep = "")
     matrix <- data.matrix(itemStats)
-    library(RColorBrewer)
     pos_heatmap <- heatmap(matrix[1:20, 2:13], Rowv = NA, Colv = NA,
                            col = brewer.pal(9, "Reds"), 
                            scale = "column", 
@@ -1513,7 +1701,7 @@ shinyServer(function(input, output, session) {
     clrs <- c()
     pchVals <- c()
     
-    if (plotType == "object"){
+    if (plotType == "object" | plotType == "objShadesBuilding"){
     	
       for(i in 1:length(subjectID)){
         n <- subjectID[i]
@@ -1620,7 +1808,8 @@ shinyServer(function(input, output, session) {
       textOut <- paste(textOut, choices[i], ":\n", sep = "")
       num <- switch(choices[i],
                     "Update on version 8, 07/25" = 1,
-                    "Update on version 11, 07/31" = 2)
+                    "Update on version 11, 07/31" = 2,
+                    "Update on version 12, 07/31" = 3)
       textOut <- paste(textOut, versionGuide[num], "\n\n", sep = "")
     }
     return(textOut)
