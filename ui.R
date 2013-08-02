@@ -290,7 +290,7 @@ shinyUI(pageWithSidebar(
         conditionalPanel( # optional heatmap plot
           condition = "input.posStatsPlot == true",
           h4("Position Intensity Plot for All Locations"),
-          helpText("(Lighter color means smaller freqeuncy for position data,
+          helpText("(Lighter color means smaller frequency for position data,
            larger decrease or smaller increase for changes)"),
           plotOutput("posStatsPlot", height = "600px", width = "850px")
         ),
@@ -339,7 +339,7 @@ shinyUI(pageWithSidebar(
         conditionalPanel( # optional heatmap plot
           condition = "input.objStatsPlot == true",
           h4("Object Interaction Intensity Plot for All Types"),
-          helpText("(Lighter color means smaller freqeuncy for object data,
+          helpText("(Lighter color means smaller frequency for object data,
            larger decrease or smaller increase for changes)"),
           plotOutput("objStatsPlot", height = "600px", width = "850px")
         ),
