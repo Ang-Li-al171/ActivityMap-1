@@ -1,13 +1,13 @@
 library(shiny)
 
 ## change this to TRUE to switch to no name version, change ui.R and server.R
-private = FALSE
+private = TRUE
 
 subjectNames <- read.csv("name_of_subjects.csv", header = FALSE, sep = ",")
 nameList <- as.character(subjectNames$V1)
 
 ## this will be updated each time the script is updated
-version = "(Development Version 12)"
+version = "(Development Version 13)"
 
 # Define UI type
 shinyUI(pageWithSidebar(
@@ -43,7 +43,7 @@ shinyUI(pageWithSidebar(
     conditionalPanel(
       condition = "$('li.active a').first().html() === 'User Guide' ",
       selectInput("userRefChoice", "Choose functionality:", multiple = TRUE,
-                  c("Introduction",
+                  c("Introduction",
                     "Position Heat Map",
                     "Object Heat Map",
                     "Conversation Map with Position Data",
@@ -55,7 +55,7 @@ shinyUI(pageWithSidebar(
     conditionalPanel(
       condition = "$('li.active a').first().html() === 'User Guide' ",
       selectInput("versionChoice", "Choose updates:", multiple = TRUE,
-                  c("Update on version 12, 07/31",
+                  c("Update on version 12, 07/31",
                     "Update on version 11, 07/31",
                     "Update on version 8, 07/25"),
                     selected = "Update on version 12, 07/31"),
