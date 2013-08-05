@@ -229,7 +229,7 @@ shinyUI(pageWithSidebar(
     ## as of 07/09, I removed the submit button, making these options only
     ## visible when "Positions" is displayed
     conditionalPanel(
-      condition = "$('li.active a').first().html()==='Positions Window'",
+      condition = "$('li.active a').first().html()==='Positions'",
       
       br(),
       
