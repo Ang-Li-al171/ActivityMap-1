@@ -1,5 +1,5 @@
 ## change this to TRUE to switch no name version, change ui.R and server.R
-private = FALSE
+private = TRUE
 
 ################################################################################
 ## Define necessary global variables
@@ -1013,15 +1013,15 @@ shinyServer(function(input, output, session) {
 
   ## Return the formula text for printing as a caption in the Main Window
   output$caption <- renderText({
-    paste("Position Heat Map:", formulaText())
+    paste("Avatar Positions:", formulaText())
   })
   
   output$captionObject <- renderText({
-    paste("Object Interactions Heat Map:", formulaText())
+    paste("Avatar Interactions with Virtual Objects:", formulaText())
   })
   
   output$captionConversation <- renderText({
-    paste("Conversation Map with Position Data:", formulaText())
+    paste("Conversations with Position Data:", formulaText())
   })
   
 ################################################################################
@@ -1791,9 +1791,9 @@ shinyServer(function(input, output, session) {
       textOut <- paste(textOut, choices[i], ":\n", sep = "")
       num <- switch(choices[i],
              "Introduction" = 1,
-             "Position Heat Map" = 2,
-             "Object Heat Map" = 3,
-             "Conversation Map with Position Data" = 4,
+             "Avatar Positions" = 2,
+             "Avatar Interactions with Virtual Objects" = 3,
+             "Conversations with Position Data" = 4,
              "Raw Data" = 5)
       textOut <- paste(textOut, userGuide[num], "\n\n", sep = "")
     }
@@ -1808,9 +1808,10 @@ shinyServer(function(input, output, session) {
     for (i in 1:length(choices)){
       textOut <- paste(textOut, choices[i], ":\n", sep = "")
       num <- switch(choices[i],
-                    "Update on version 8, 07/25" = 1,
-                    "Update on version 11, 07/31" = 2,
-                    "Update on version 12, 07/31" = 3)
+                    "Version 8, 2013/07/25" = 1,
+                    "Version 11, 2013/07/31" = 2,
+                    "Version 12, 2013/07/31" = 3,
+                    "Version 14, 2013/08/05" = 4)
       textOut <- paste(textOut, versionGuide[num], "\n\n", sep = "")
     }
     return(textOut)

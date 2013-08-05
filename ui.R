@@ -7,7 +7,7 @@ subjectNames <- read.csv("name_of_subjects.csv", header = FALSE, sep = ",")
 nameList <- as.character(subjectNames$V1)
 
 ## this will be updated each time the script is updated
-version = "(Development Version 13)"
+version = "(Development Version 14)"
 
 # Define UI type
 shinyUI(pageWithSidebar(
@@ -44,9 +44,9 @@ shinyUI(pageWithSidebar(
       condition = "$('li.active a').first().html() === 'User Guide' ",
       selectInput("userRefChoice", "Choose functionality:", multiple = TRUE,
                   c("Introduction",
-                    "Position Heat Map",
-                    "Object Heat Map",
-                    "Conversation Map with Position Data",
+                    "Avatar Positions",
+                    "Avatar Interactions with Virtual Objects",
+                    "Conversations with Position Data",
                     "Raw Data"),
                     selected = "Introduction"),
       br()
@@ -55,10 +55,11 @@ shinyUI(pageWithSidebar(
     conditionalPanel(
       condition = "$('li.active a').first().html() === 'User Guide' ",
       selectInput("versionChoice", "Choose updates:", multiple = TRUE,
-                  c("Update on version 12, 07/31",
-                    "Update on version 11, 07/31",
-                    "Update on version 8, 07/25"),
-                    selected = "Update on version 12, 07/31"),
+                  c("Version 14, 2013/08/05",
+                    "Version 12, 2013/07/31",
+                    "Version 11, 2013/07/31",
+                    "Version 8, 2013/07/25"),
+                    selected = "Version 14, 2013/08/05"),
       br()
     ),
     
@@ -66,22 +67,22 @@ shinyUI(pageWithSidebar(
       condition = "$('li.active a').first().html() === 'Object Interactions' ",
       radioButtons("objPlotType",
                    "Plot type:",
-                   list("By Subjects" = "bySubject",
+                   list("By Subject" = "bySubject",
                         "By Object Type" = "byType",
                         "By Aggregate Frequency" = "byFreq"
                    ),
-                   selected = "By Subjects"
+                   selected = "By Subject"
       )
     ),
     
     conditionalPanel(
-      condition = "$('li.active a').first().html() === 'Main Window' ",
+      condition = "$('li.active a').first().html() === 'Positions' ",
       radioButtons("posPlotType",
                    "Plot type:",
-                   list("By Subjects" = "bySubject",
+                   list("By Subject" = "bySubject",
                         "By Aggregate Frequency" = "byFreq"
                    ),
-                   selected = "By Subjects"
+                   selected = "By Subject"
       )
     ),
     
@@ -119,7 +120,7 @@ shinyUI(pageWithSidebar(
       condition = "input.private == true &&
                    $('li.active a').first().html() !== 'User Guide' ",
       # check boxes for all 20 subjects, with avatar names
-      checkboxGroupInput("subjectNoName", "Subjects(Anonymous): ",  
+      checkboxGroupInput("subjectNoName", "Subjects (anonymized): ",  
                       c("S1", 
                         "S2", 
                         "S3",
@@ -173,7 +174,7 @@ shinyUI(pageWithSidebar(
                     "Display Object Type Statistics",
                     value=FALSE),
       checkboxInput("objStatsPlot",
-                    "Display Object Interaction Type Stats Plot",
+                    "Display Object Interaction Type Statistics",
                     value=TRUE),
       br()
     ),
@@ -226,21 +227,21 @@ shinyUI(pageWithSidebar(
     
     
     ## as of 07/09, I removed the submit button, making these options only
-    ## visible when "Main Window" is displayed
+    ## visible when "Positions" is displayed
     conditionalPanel(
-      condition = "$('li.active a').first().html()==='Main Window'",
+      condition = "$('li.active a').first().html()==='Positions Window'",
       
       br(),
       
       # optional weight plot
-      checkboxInput("posStatsPlot", "Show Position Stats Plot", value=TRUE), 
+      checkboxInput("posStatsPlot", "Show Position Statistics", value=TRUE), 
       
       # optional weight plot
-      checkboxInput("weightPlot", "Show Weight Plots", value=TRUE), 
+      checkboxInput("weightPlot", "Show Weight Values", value=TRUE), 
       # optional HBA1C plot
-      checkboxInput("HBA1CPlot", "Show HBA1C Plots", value=TRUE), 
+      checkboxInput("HBA1CPlot", "Show HBA1C Values", value=TRUE), 
       
-      checkboxInput("surveyP", "Show Survey Score Plots", value=TRUE),
+      checkboxInput("surveyP", "Show Survey Responses", value=TRUE),
       
       # Legend is fixed to visible on 07/10
   
@@ -279,7 +280,7 @@ shinyUI(pageWithSidebar(
     tabsetPanel(
         
       # first tab
-      tabPanel("Main Window",
+      tabPanel("Positions",
         
         # dynamic title
         h4(textOutput("caption")),
@@ -289,8 +290,8 @@ shinyUI(pageWithSidebar(
         
         conditionalPanel( # optional heatmap plot
           condition = "input.posStatsPlot == true",
-          h4("Position Intensity Plot for All Locations"),
-          helpText("(Lighter color means smaller frequency for position data,
+          h4("Position Frequency for All Locations"),
+          helpText("(Lighter color means lower frequency for position data,
            larger decrease or smaller increase for changes)"),
           plotOutput("posStatsPlot", height = "600px", width = "850px")
         ),
@@ -338,8 +339,8 @@ shinyUI(pageWithSidebar(
         
         conditionalPanel( # optional heatmap plot
           condition = "input.objStatsPlot == true",
-          h4("Object Interaction Intensity Plot for All Types"),
-          helpText("(Lighter color means smaller frequency for object data,
+          h4("Object Interaction Frequency for All Types"),
+          helpText("(Lighter color means lower frequency for object data,
            larger decrease or smaller increase for changes)"),
           plotOutput("objStatsPlot", height = "600px", width = "850px")
         ),
