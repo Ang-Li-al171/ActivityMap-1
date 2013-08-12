@@ -1159,7 +1159,7 @@ shinyServer(function(input, output, session) {
       # If this subject has valid clinal data on record
       if (subKey %in% clinicalSub$logkey){                                        
         rName <- c(rName, paste('S', n, 
-                                sep = ""))  # Assign rowname for Subject Number
+                                sep = ""))  # Assign rowname: Subject Number
         clrs <<- c(clrs, participantClrs[n])  # Assign color to the data pt.
         pchVals <<- c(pchVals, participantShapes[n])  # Assign shape              
       }
@@ -1525,6 +1525,34 @@ shinyServer(function(input, output, session) {
            "Diabetes Knowledge" = c(0.4, 1.1)
     )
   }
+
+################################################################################
+## Drawing the bubble chart
+################################################################################
+  output$bubbleChart <- renderPlot({
+  	subjectID <- subjectInput() # interactive input from user
+  	subjectID <- subjectID[which(!subjectID==3)] # remove subject 3: no clinical
+    gatherData()
+    
+    baseWeight <- plotData[, 10]
+    M6Weight <- plotData[, 24]
+    baseHBA1C <- plotData[, 14]
+    M6HBA1C <- plotData[, 28]
+    subNum <- row.names(plotData)
+    
+    posStats <- read.csv("position_Stats.csv", header = TRUE, sep = ",")
+    itemStats <- read.csv("item_Stats.csv", header = TRUE, sep = ",")
+    radius <- 0.5*posStats$Pos.Total[subjectID] +
+              0.5*itemStats$Item.Total[subjectID]
+    symbols(baseWeight, baseHBA1C, circles=radius, inches = 0.35,
+            fg = "black", bg = "red", xlab = "Weight/lb", ylab = "HBA1C",
+            xlim = yLimits('Weight'), ylim=yLimits('HBA1C'))
+    symbols(M6Weight, M6HBA1C, circles=radius, inches = 0.35,
+            fg = "black", bg = "yellow", xlab = "Weight/lb", ylab = "HBA1C",
+            add = TRUE)
+    text(baseWeight, baseHBA1C, paste("Base", subNum), cex = 0.9)
+    text(M6Weight, M6HBA1C, paste("M6", subNum), cex = 0.9)
+  })
 
 ################################################################################
 ## Drawing the weightPlot and HBA1CPlot
