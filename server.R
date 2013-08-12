@@ -1,5 +1,5 @@
 ## change this to TRUE to switch no name version, change ui.R and server.R
-private = TRUE
+private = FALSE
 
 ################################################################################
 ## Define necessary global variables
@@ -1489,7 +1489,7 @@ shinyServer(function(input, output, session) {
     posStats <- read.csv("position_Stats.csv", header = TRUE, sep = ",")
     row.names(posStats) <- paste('S', row.names(posStats), sep = "")
     matrix <- data.matrix(posStats)
-    pos_heatmap <- heatmap(matrix[1:20, 2:14], Rowv = NA, Colv = NA,
+    pos_heatmap <- heatmap(matrix[1:20, 2:15], Rowv = NA, Colv = NA,
                            col = brewer.pal(9, "Blues"), 
                            scale = "column", 
                            margin = c(10 , 10))
@@ -1499,7 +1499,7 @@ shinyServer(function(input, output, session) {
     itemStats <- read.csv("item_Stats.csv", header = TRUE, sep = ",")
     row.names(itemStats) <- paste('S', row.names(itemStats), sep = "")
     matrix <- data.matrix(itemStats)
-    pos_heatmap <- heatmap(matrix[1:20, 2:13], Rowv = NA, Colv = NA,
+    pos_heatmap <- heatmap(matrix[1:20, 2:14], Rowv = NA, Colv = NA,
                            col = brewer.pal(9, "Reds"), 
                            scale = "column", 
                            margin = c(10 , 10))
