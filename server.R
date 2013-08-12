@@ -1540,18 +1540,25 @@ shinyServer(function(input, output, session) {
     M6HBA1C <- plotData[, 28]
     subNum <- row.names(plotData)
     
-    posStats <- read.csv("position_Stats.csv", header = TRUE, sep = ",")
-    itemStats <- read.csv("item_Stats.csv", header = TRUE, sep = ",")
-    radius <- 0.5*posStats$Pos.Total[subjectID] +
-              0.5*itemStats$Item.Total[subjectID]
-    symbols(baseWeight, baseHBA1C, circles=radius, inches = 0.35,
-            fg = "black", bg = "red", xlab = "Weight/lb", ylab = "HBA1C",
-            xlim = yLimits('Weight'), ylim=yLimits('HBA1C'))
-    symbols(M6Weight, M6HBA1C, circles=radius, inches = 0.35,
-            fg = "black", bg = "yellow", xlab = "Weight/lb", ylab = "HBA1C",
-            add = TRUE)
-    text(baseWeight, baseHBA1C, paste("Base", subNum), cex = 0.9)
-    text(M6Weight, M6HBA1C, paste("M6", subNum), cex = 0.9)
+    if (length(baseWeight) > 0){
+      posStats <- read.csv("position_Stats.csv", header = TRUE, sep = ",")
+      itemStats <- read.csv("item_Stats.csv", header = TRUE, sep = ",")
+      radius <- 0.5*posStats$Pos.Total[subjectID] +
+                0.5*itemStats$Item.Total[subjectID]
+      symbols(baseWeight, baseHBA1C, circles=radius, inches = 0.35,
+              fg = "black", bg = "red", xlab = "Weight/lb", ylab = "HBA1C",
+              xlim = yLimits('Weight'), ylim=yLimits('HBA1C'))
+      symbols(M6Weight, M6HBA1C, circles=radius, inches = 0.35,
+              fg = "black", bg = "yellow", xlab = "Weight/lb", ylab = "HBA1C",
+              add = TRUE)
+      text(baseWeight, baseHBA1C, paste("Base", subNum), cex = 0.9)
+      text(M6Weight, M6HBA1C, paste("M6", subNum), cex = 1.4)
+    }
+    else{
+      symbols(0, 0, circles=1, inches = 0.35,
+              fg = "white", bg = "white", xlab = "Weight/lb", ylab = "HBA1C",
+              xlim = yLimits('Weight'), ylim=yLimits('HBA1C'))
+    }
   })
 
 ################################################################################
@@ -1839,7 +1846,8 @@ shinyServer(function(input, output, session) {
                     "Version 8, 2013/07/25" = 1,
                     "Version 11, 2013/07/31" = 2,
                     "Version 12, 2013/07/31" = 3,
-                    "Version 14, 2013/08/05" = 4)
+                    "Version 14, 2013/08/05" = 4,
+                    "Version 15, 2013/08/12" = 5)
       textOut <- paste(textOut, versionGuide[num], "\n\n", sep = "")
     }
     return(textOut)

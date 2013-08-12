@@ -11,3 +11,7 @@
 -The numbers beside building names are the frequency counts
 -Try not to use this type for All Subjects over extended period of time, because it takes time to process"
 "4","-Edited some titles and text for clarity"
+"5","-Added a Pos.Total column and a Item.Total column for the frequency heat map
+-Added a Bubble Chart under Position Tab, which tracks the changes in Weight and HBA1C for chosen subjects, with the circles sized based on Activity
+-Activity is defined to be 0.5 * Number of Position Data + 0.5 * Number of Item Data
+-Some circles are missing due to incomplete clinical data
