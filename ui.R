@@ -76,7 +76,7 @@ shinyUI(pageWithSidebar(
     ),
     
     conditionalPanel(
-      condition = "$('li.active a').first().html() === 'Positions' ",
+      condition = "$('li.active a').first().html() === 'Positions'",
       radioButtons("posPlotType",
                    "Plot type:",
                    list("By Subject" = "bySubject",
