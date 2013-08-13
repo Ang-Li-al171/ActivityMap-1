@@ -1,7 +1,7 @@
 library(shiny)
 
 ## change this to TRUE to switch to no name version, change ui.R and server.R
-private = FALSE
+private = TRUE
 
 subjectNames <- read.csv("name_of_subjects.csv", header = FALSE, sep = ",")
 nameList <- as.character(subjectNames$V1)
@@ -291,7 +291,7 @@ shinyUI(pageWithSidebar(
         
         conditionalPanel( # optional bubble chart
           condition = "input.bubblePlot == true",
-          h4("Bubble Chart showing changes in Weight & HBA1C"),
+          h4("Weight vs. HBA1C vs. Virtual Activity Level"),
           helpText("Red bubbles are base-line values, yellow bubbles are 
           values at M6. Size of circle corresponds to Activity in Second Life. 
           Some clinical data are missing due to incopmlete raw data."),

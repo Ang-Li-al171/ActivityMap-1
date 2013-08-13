@@ -1,5 +1,5 @@
 ## change this to TRUE to switch no name version, change ui.R and server.R
-private = FALSE
+private = TRUE
 
 ################################################################################
 ## Define necessary global variables
