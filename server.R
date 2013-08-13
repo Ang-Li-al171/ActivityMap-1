@@ -1,5 +1,5 @@
 ## change this to TRUE to switch no name version, change ui.R and server.R
-private = TRUE
+private = FALSE
 
 ################################################################################
 ## Define necessary global variables
@@ -1159,7 +1159,7 @@ shinyServer(function(input, output, session) {
       # If this subject has valid clinal data on record
       if (subKey %in% clinicalSub$logkey){                                        
         rName <- c(rName, paste('S', n, 
-                                sep = ""))  # Assign rowname for Subject Number
+                                sep = ""))  # Assign rowname: Subject Number
         clrs <<- c(clrs, participantClrs[n])  # Assign color to the data pt.
         pchVals <<- c(pchVals, participantShapes[n])  # Assign shape              
       }
@@ -1489,7 +1489,7 @@ shinyServer(function(input, output, session) {
     posStats <- read.csv("position_Stats.csv", header = TRUE, sep = ",")
     row.names(posStats) <- paste('S', row.names(posStats), sep = "")
     matrix <- data.matrix(posStats)
-    pos_heatmap <- heatmap(matrix[1:20, 2:14], Rowv = NA, Colv = NA,
+    pos_heatmap <- heatmap(matrix[1:20, 2:15], Rowv = NA, Colv = NA,
                            col = brewer.pal(9, "Blues"), 
                            scale = "column", 
                            margin = c(10 , 10))
@@ -1499,7 +1499,7 @@ shinyServer(function(input, output, session) {
     itemStats <- read.csv("item_Stats.csv", header = TRUE, sep = ",")
     row.names(itemStats) <- paste('S', row.names(itemStats), sep = "")
     matrix <- data.matrix(itemStats)
-    pos_heatmap <- heatmap(matrix[1:20, 2:13], Rowv = NA, Colv = NA,
+    pos_heatmap <- heatmap(matrix[1:20, 2:14], Rowv = NA, Colv = NA,
                            col = brewer.pal(9, "Reds"), 
                            scale = "column", 
                            margin = c(10 , 10))
@@ -1525,6 +1525,41 @@ shinyServer(function(input, output, session) {
            "Diabetes Knowledge" = c(0.4, 1.1)
     )
   }
+
+################################################################################
+## Drawing the bubble chart
+################################################################################
+  output$bubbleChart <- renderPlot({
+  	subjectID <- subjectInput() # interactive input from user
+  	subjectID <- subjectID[which(!subjectID==3)] # remove subject 3: no clinical
+    gatherData()
+    
+    baseWeight <- plotData[, 10]
+    M6Weight <- plotData[, 24]
+    baseHBA1C <- plotData[, 14]
+    M6HBA1C <- plotData[, 28]
+    subNum <- row.names(plotData)
+    
+    if (length(baseWeight) > 0){
+      posStats <- read.csv("position_Stats.csv", header = TRUE, sep = ",")
+      itemStats <- read.csv("item_Stats.csv", header = TRUE, sep = ",")
+      radius <- 0.5*posStats$Pos.Total[subjectID] +
+                0.5*itemStats$Item.Total[subjectID]
+      symbols(baseWeight, baseHBA1C, circles=radius, inches = 0.35,
+              fg = "black", bg = "red", xlab = "Weight/lb", ylab = "HBA1C",
+              xlim = yLimits('Weight'), ylim=yLimits('HBA1C'))
+      symbols(M6Weight, M6HBA1C, circles=radius, inches = 0.35,
+              fg = "black", bg = "yellow", xlab = "Weight/lb", ylab = "HBA1C",
+              add = TRUE)
+      text(baseWeight, baseHBA1C, paste("Base", subNum), cex = 0.9)
+      text(M6Weight, M6HBA1C, paste("M6", subNum), cex = 1.4)
+    }
+    else{
+      symbols(0, 0, circles=1, inches = 0.35,
+              fg = "white", bg = "white", xlab = "Weight/lb", ylab = "HBA1C",
+              xlim = yLimits('Weight'), ylim=yLimits('HBA1C'))
+    }
+  })
 
 ################################################################################
 ## Drawing the weightPlot and HBA1CPlot
@@ -1811,7 +1846,8 @@ shinyServer(function(input, output, session) {
                     "Version 8, 2013/07/25" = 1,
                     "Version 11, 2013/07/31" = 2,
                     "Version 12, 2013/07/31" = 3,
-                    "Version 14, 2013/08/05" = 4)
+                    "Version 14, 2013/08/05" = 4,
+                    "Version 15, 2013/08/12" = 5)
       textOut <- paste(textOut, versionGuide[num], "\n\n", sep = "")
     }
     return(textOut)

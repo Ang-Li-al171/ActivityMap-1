@@ -1,17 +1,17 @@
 library(shiny)
 
 ## change this to TRUE to switch to no name version, change ui.R and server.R
-private = TRUE
+private = FALSE
 
 subjectNames <- read.csv("name_of_subjects.csv", header = FALSE, sep = ",")
 nameList <- as.character(subjectNames$V1)
 
 ## this will be updated each time the script is updated
-version = "(Development Version 14)"
+version = "(Development Version 15)"
 
 # Define UI type
 shinyUI(pageWithSidebar(
-                                                                                
+
   # Application title
   headerPanel(paste("Activity Map with Clinical and Survey Data",
                     version,
@@ -55,11 +55,12 @@ shinyUI(pageWithSidebar(
     conditionalPanel(
       condition = "$('li.active a').first().html() === 'User Guide' ",
       selectInput("versionChoice", "Choose updates:", multiple = TRUE,
-                  c("Version 14, 2013/08/05",
+                  c("Version 15, 2013/08/12",
+                    "Version 14, 2013/08/05",
                     "Version 12, 2013/07/31",
                     "Version 11, 2013/07/31",
                     "Version 8, 2013/07/25"),
-                    selected = "Version 14, 2013/08/05"),
+                    selected = "Version 15, 2013/08/12"),
       br()
     ),
     
@@ -230,17 +231,17 @@ shinyUI(pageWithSidebar(
     ## visible when "Positions" is displayed
     conditionalPanel(
       condition = "$('li.active a').first().html()==='Positions'",
-      
       br(),
-      
+            
+      # optional bubble chart
+      checkboxInput("bubblePlot", "Show Bubble Chart", value=TRUE), 
       # optional weight plot
       checkboxInput("posStatsPlot", "Show Position Statistics", value=TRUE), 
-      
       # optional weight plot
       checkboxInput("weightPlot", "Show Weight Values", value=TRUE), 
       # optional HBA1C plot
       checkboxInput("HBA1CPlot", "Show HBA1C Values", value=TRUE), 
-      
+      # optional survey plot
       checkboxInput("surveyP", "Show Survey Responses", value=TRUE),
       
       # Legend is fixed to visible on 07/10
@@ -287,6 +288,15 @@ shinyUI(pageWithSidebar(
        
         # set the width & height of Activity Map
         plotOutput("activityPlot", height = "850px", width = "850px"), 
+        
+        conditionalPanel( # optional bubble chart
+          condition = "input.bubblePlot == true",
+          h4("Bubble Chart showing changes in Weight & HBA1C"),
+          helpText("Red bubbles are base-line values, yellow bubbles are 
+          values at M6. Size of circle corresponds to Activity in Second Life. 
+          Some clinical data are missing due to incopmlete raw data."),
+          plotOutput("bubbleChart", height = "700px", width = "800px")
+        ),
         
         conditionalPanel( # optional heatmap plot
           condition = "input.posStatsPlot == true",
