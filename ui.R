@@ -7,7 +7,7 @@ subjectNames <- read.csv("name_of_subjects.csv", header = FALSE, sep = ",")
 nameList <- as.character(subjectNames$V1)
 
 ## this will be updated each time the script is updated
-version = "(Development Version 15)"
+version = "(Development Version 16)"
 
 # Define UI type
 shinyUI(pageWithSidebar(
@@ -55,12 +55,13 @@ shinyUI(pageWithSidebar(
     conditionalPanel(
       condition = "$('li.active a').first().html() === 'User Guide' ",
       selectInput("versionChoice", "Choose updates:", multiple = TRUE,
-                  c("Version 15, 2013/08/12",
+                  c("Version 16, 2013/10/20",
+                  	"Version 15, 2013/08/12",
                     "Version 14, 2013/08/05",
                     "Version 12, 2013/07/31",
                     "Version 11, 2013/07/31",
                     "Version 8, 2013/07/25"),
-                    selected = "Version 15, 2013/08/12"),
+                    selected = "Version 16, 2013/10/20"),
       br()
     ),
     
@@ -293,7 +294,7 @@ shinyUI(pageWithSidebar(
           condition = "input.bubblePlot == true",
           h4("Weight vs. HBA1C vs. Virtual Activity Level"),
           helpText("Red bubbles are base-line values, yellow bubbles are 
-          values at M6. Size of circle corresponds to Activity in Second Life. 
+          values at M6. Size of M6 circle corresponds to Activity in Second Life. 
           Some clinical data are missing due to incopmlete raw data."),
           plotOutput("bubbleChart", height = "700px", width = "800px")
         ),
@@ -301,8 +302,8 @@ shinyUI(pageWithSidebar(
         conditionalPanel( # optional heatmap plot
           condition = "input.posStatsPlot == true",
           h4("Position Frequency for All Locations"),
-          helpText("(Lighter color means lower frequency for position data,
-           larger decrease or smaller increase for changes)"),
+          helpText("(Red color means negative values.
+           Blue color means positive values. Refer to the legend for details.)"),
           plotOutput("posStatsPlot", height = "600px", width = "850px")
         ),
         
@@ -350,8 +351,8 @@ shinyUI(pageWithSidebar(
         conditionalPanel( # optional heatmap plot
           condition = "input.objStatsPlot == true",
           h4("Object Interaction Frequency for All Types"),
-          helpText("(Lighter color means lower frequency for object data,
-           larger decrease or smaller increase for changes)"),
+          helpText("(Red color means negative values.
+           Blue color means positive values. Refer to the legend for details.)"),
           plotOutput("objStatsPlot", height = "600px", width = "850px")
         ),
         

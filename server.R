@@ -599,7 +599,7 @@ plotTimePeriod <- function(dayCountPeriod, datePeriod, timePeriod,
 
 xCoorText <- function(str){
   switch(str,
-         'Classroom' = 82,
+         'Classroom' = 70,
          'Games' = 37,
          'Orientation' = 89,
          'Bookstore' = 185,
@@ -1489,20 +1489,53 @@ shinyServer(function(input, output, session) {
     posStats <- read.csv("position_Stats.csv", header = TRUE, sep = ",")
     row.names(posStats) <- paste('S', row.names(posStats), sep = "")
     matrix <- data.matrix(posStats)
+    pos_breaks <- c(-45, -35, -25, -15, -5, -0.01, 
+                    5, 100, 500, 1000, 8000, 16000)
     pos_heatmap <- heatmap(matrix[1:20, 2:15], Rowv = NA, Colv = NA,
-                           col = brewer.pal(9, "Blues"), 
-                           scale = "column", 
+                           col = brewer.pal(11, "RdBu"), 
+                           scale = "none",
+                           breaks = pos_breaks,
                            margin = c(10 , 10))
+    legend("left", fill = brewer.pal(11, "RdBu"),
+           legend = c("-45 to -35",
+                      "-35 to -25",
+                      "-25 to -15",
+                      "-15 to -5",
+                      "-5 to 0",
+                      "0 to 5",
+                      "5 to 100",
+                      "100 to 500",
+                      "500 to 1000",
+                      "1000 to 8000",
+                      "8000 to 16000")
+    )
   })
 
   output$objStatsPlot <- renderPlot({
     itemStats <- read.csv("item_Stats.csv", header = TRUE, sep = ",")
     row.names(itemStats) <- paste('S', row.names(itemStats), sep = "")
     matrix <- data.matrix(itemStats)
-    pos_heatmap <- heatmap(matrix[1:20, 2:14], Rowv = NA, Colv = NA,
-                           col = brewer.pal(9, "Reds"), 
-                           scale = "column", 
+    
+    obj_breaks <- c(-45, -35, -25, -15, -5, -0.01, 
+                    5, 20, 50, 100, 200, 450)
+    obj_heatmap <- heatmap(matrix[1:20, 2:14], Rowv = NA, Colv = NA,
+                           col = brewer.pal(11, "RdBu"),
+                           breaks = obj_breaks, 
+                           scale = "none", 
                            margin = c(10 , 10))
+    legend("left", fill = brewer.pal(11, "RdBu"),
+           legend = c("-45 to -35",
+                      "-35 to -25",
+                      "-25 to -15",
+                      "-15 to -5",
+                      "-5 to 0",
+                      "0 to 5",
+                      "5 to 20",
+                      "20 to 50",
+                      "50 to 100",
+                      "100 to 200",
+                      "200 to 450")
+    )
   })
   
 ################################################################################
@@ -1545,7 +1578,9 @@ shinyServer(function(input, output, session) {
       itemStats <- read.csv("item_Stats.csv", header = TRUE, sep = ",")
       radius <- 0.5*posStats$Pos.Total[subjectID] +
                 0.5*itemStats$Item.Total[subjectID]
-      symbols(baseWeight, baseHBA1C, circles=radius, inches = 0.35,
+      avgRadius <- mean(radius)
+      symbols(baseWeight, baseHBA1C,
+      		  circles=rep(avgRadius, length(radius)), inches = 0.35,
               fg = "black", bg = "red", xlab = "Weight/lb", ylab = "HBA1C",
               xlim = yLimits('Weight'), ylim=yLimits('HBA1C'))
       symbols(M6Weight, M6HBA1C, circles=radius, inches = 0.35,
@@ -1847,7 +1882,8 @@ shinyServer(function(input, output, session) {
                     "Version 11, 2013/07/31" = 2,
                     "Version 12, 2013/07/31" = 3,
                     "Version 14, 2013/08/05" = 4,
-                    "Version 15, 2013/08/12" = 5)
+                    "Version 15, 2013/08/12" = 5,
+                    "Version 16, 2013/10/20" = 6)
       textOut <- paste(textOut, versionGuide[num], "\n\n", sep = "")
     }
     return(textOut)

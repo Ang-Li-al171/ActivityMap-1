@@ -14,4 +14,7 @@
 "5","-Added a Pos.Total column and a Item.Total column for the frequency heat map
 -Added a Bubble Chart under Position Tab, which tracks the changes in Weight and HBA1C for chosen subjects, with the circles sized based on Activity
 -Activity is defined to be 0.5 * Number of Position Data + 0.5 * Number of Item Data
--Some circles are missing due to incomplete clinical data
+-Some circles are missing due to incomplete clinical data"
+"6","-Modified the bubble chart. The baseline bubbles are now all of the same size. The M6 bubbles are sized based on each avatars activity during the six months
+-Optimized frequency heatmap for both position and object interaction with a Blue-Red color scale together with a specified legend
+-Moved text for Aggregate Frequency plot so that all numbers and text can be seen clearly"
