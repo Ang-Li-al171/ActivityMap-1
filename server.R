@@ -1487,16 +1487,22 @@ shinyServer(function(input, output, session) {
 ################################################################################
   output$posStatsPlot <- renderPlot({
     posStats <- read.csv("position_Stats.csv", header = TRUE, sep = ",")
+    names(posStats)[13] <- " "  # make the empty column has no label
     row.names(posStats) <- paste('S', row.names(posStats), sep = "")
     matrix <- data.matrix(posStats)
     pos_breaks <- c(-45, -35, -25, -15, -5, -0.01, 
                     5, 100, 500, 1000, 8000, 16000)
+    pos_colors <- c(rev(brewer.pal(6, "Reds")[2:6]), 
+                    "white",
+                    brewer.pal(6, "Blues")[2:6])
     pos_heatmap <- heatmap(matrix[1:20, 2:15], Rowv = NA, Colv = NA,
-                           col = brewer.pal(11, "RdBu"), 
+                           col = pos_colors, 
                            scale = "none",
                            breaks = pos_breaks,
-                           margin = c(10 , 10))
-    legend("left", fill = brewer.pal(11, "RdBu"),
+                           margin = c(10 , 10),
+                           cexRow = 1.3,
+                           cexCol = 1.1)
+    legend("right", fill = pos_colors,
            legend = c("-45 to -35",
                       "-35 to -25",
                       "-25 to -15",
@@ -1513,17 +1519,23 @@ shinyServer(function(input, output, session) {
 
   output$objStatsPlot <- renderPlot({
     itemStats <- read.csv("item_Stats.csv", header = TRUE, sep = ",")
+    names(itemStats)[12] <- " "  # make the empty column has no label
     row.names(itemStats) <- paste('S', row.names(itemStats), sep = "")
     matrix <- data.matrix(itemStats)
     
     obj_breaks <- c(-45, -35, -25, -15, -5, -0.01, 
                     5, 20, 50, 100, 200, 450)
+    obj_colors <- c(rev(brewer.pal(6, "Reds")[2:6]), 
+                    "white",
+                    brewer.pal(6, "Blues")[2:6])
     obj_heatmap <- heatmap(matrix[1:20, 2:14], Rowv = NA, Colv = NA,
-                           col = brewer.pal(11, "RdBu"),
+                           col = obj_colors,
                            breaks = obj_breaks, 
                            scale = "none", 
-                           margin = c(10 , 10))
-    legend("left", fill = brewer.pal(11, "RdBu"),
+                           margin = c(10 , 10),
+                           cexRow = 1.3,
+                           cexCol = 1.1)
+    legend("right", fill = obj_colors,
            legend = c("-45 to -35",
                       "-35 to -25",
                       "-25 to -15",

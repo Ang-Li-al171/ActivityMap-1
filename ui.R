@@ -7,7 +7,7 @@ subjectNames <- read.csv("name_of_subjects.csv", header = FALSE, sep = ",")
 nameList <- as.character(subjectNames$V1)
 
 ## this will be updated each time the script is updated
-version = "(Development Version 16)"
+version = "(Development Version 17)"
 
 # Define UI type
 shinyUI(pageWithSidebar(
@@ -301,9 +301,10 @@ shinyUI(pageWithSidebar(
         
         conditionalPanel( # optional heatmap plot
           condition = "input.posStatsPlot == true",
-          h4("Position Frequency for All Locations"),
-          helpText("(Red color means negative values.
-           Blue color means positive values. Refer to the legend for details.)"),
+          h4("Position Frequency for All Locations (Start to End)"),
+          helpText("(Red color represents negative values.
+           Blue color represents positive values. 
+           Refer to the legend for details.)"),
           plotOutput("posStatsPlot", height = "600px", width = "850px")
         ),
         
@@ -350,9 +351,10 @@ shinyUI(pageWithSidebar(
         
         conditionalPanel( # optional heatmap plot
           condition = "input.objStatsPlot == true",
-          h4("Object Interaction Frequency for All Types"),
-          helpText("(Red color means negative values.
-           Blue color means positive values. Refer to the legend for details.)"),
+          h4("Object Interaction Frequency for All Types (Start to End)"),
+          helpText("(Red color represents negative values.
+           Blue color represents positive values. 
+           Refer to the legend for details.)"),
           plotOutput("objStatsPlot", height = "600px", width = "850px")
         ),
         
